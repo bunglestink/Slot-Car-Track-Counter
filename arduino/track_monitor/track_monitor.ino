@@ -4,6 +4,9 @@
 #define TRIG_PIN_1 8
 #define LED_PIN 13
 
+long getDurationFromSensor(int trigPin, int echoPin);
+
+
 void setup() {
   Serial.begin(9600);
   pinMode(TRIG_PIN_1, OUTPUT);
@@ -11,24 +14,30 @@ void setup() {
   pinMode(LED_PIN, OUTPUT);
 }
 
+
 void loop() {
-  static long duration, distance;
+  static long durationTrack1, distanceTrack1;
   static char serialMessage[50];
-  
+
   // TODO: expand this to add a second track.
-  digitalWrite(TRIG_PIN_1, LOW);
-  delayMicroseconds(2);
-  
-  digitalWrite(TRIG_PIN_1, HIGH);
-  delayMicroseconds(10);
-  
-  digitalWrite(TRIG_PIN_1, LOW);
-  duration = pulseIn(ECHO_PIN_1, HIGH);
-  
-  distance = duration / 58.2;
-  sprintf(serialMessage, "[{\"track\":1,\"value\":%i}]", distance);
+  durationTrack1 = getDurationFromSensor(TRIG_PIN_1, ECHO_PIN_1);
+
+  distanceTrack1 = durationTrack1 / 58.2;
+  sprintf(serialMessage, "[{\"track\":1,\"value\":%i}]", distanceTrack1);
   Serial.println(serialMessage);
-  
+
   delay(30);
+}
+
+
+long getDurationFromSensor(int trigPin, int echoPin) {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+
+  digitalWrite(trigPin, LOW);
+  return pulseIn(ECHO_PIN_1, HIGH);  
 }
 
