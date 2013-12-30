@@ -37,6 +37,6 @@ long getDurationFromSensor(int trigPin, int echoPin) {
   delayMicroseconds(10);
 
   digitalWrite(trigPin, LOW);
-  return pulseIn(ECHO_PIN_1, HIGH);  
+  return pulseIn(echoPin, HIGH);  
 }
 
