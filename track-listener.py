@@ -98,17 +98,22 @@ def Main():
   # Clear the output file if present by deleting.
   DeleteOutputFileIfExists()
 
+  # After being tripped, a track is inactive until its corresponding time.
+  track_inactive_until_map = collections.defaultdict(lambda: 0)
+
   # Now loop forever, reading when there are significant changes.
   while True:
     values = arduino.GetValues()
     for track_record in values:
       track = track_record['track']
       value = track_record['value']
-      if IsValueSignificantlyDifferent(arduino.initial_values[track], value):
+
+      if (track_inactive_until_map[track] < time.time() and
+          IsValueSignificantlyDifferent(arduino.initial_values[track], value)):
         print 'track %s tripped!' % track
         LogTripTime(track)
-        # TODO: This WON'T work with multiple tracks!
-        time.sleep(_WAIT_AFTER_TRIP_SECONDS)
+        track_inactive_until_map[track] = time.time() + _WAIT_AFTER_TRIP_SECONDS
+        # TODO: Determine when this tream should be flushed with multi-tracks.
         arduino.FlushStream()
 
 
