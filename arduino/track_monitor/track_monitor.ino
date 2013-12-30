@@ -16,14 +16,13 @@ void setup() {
 
 
 void loop() {
-  static long durationTrack1, distanceTrack1;
+  static long durationTrack1;
   static char serialMessage[50];
 
   // TODO: expand this to add a second track.
   durationTrack1 = getDurationFromSensor(TRIG_PIN_1, ECHO_PIN_1);
 
-  distanceTrack1 = durationTrack1 / 58.2;
-  sprintf(serialMessage, "[{\"track\":1,\"value\":%i}]", distanceTrack1);
+  sprintf(serialMessage, "[{\"track\":1,\"value\":%i}]", durationTrack1);
   Serial.println(serialMessage);
 
   delay(30);
