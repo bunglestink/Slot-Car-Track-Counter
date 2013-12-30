@@ -1,3 +1,4 @@
+# An http server to serve the track counter frontend.
 
 from bottle import route
 from bottle import run
@@ -9,6 +10,7 @@ _PORT = 80
 
 _STATIC_FILE_ROOT = './static'
 
+_TRACK_MONITOR_PROCESS_FILE = '/tmp/track-monitor-process'
 
 @route('/')
 def Index():
@@ -20,5 +22,32 @@ def StaticFiles(path):
   return static_file(path, _STATIC_FILE_ROOT)
 
 
-run(host=_HOSTNAME, port=_PORT)
+@route('/api/race/start')
+def StartRace():
+  pass
+
+
+@route('/api/race/stop')
+def StopRace():
+  pass
+
+
+@route('/api/race/stats')
+def GetRaceStats():
+  pass
+
+
+def Setup():
+  pass
+
+
+def Shutdown():
+  pass
+
+
+try:
+  Setup()
+  run(host=_HOSTNAME, port=_PORT)
+finally:
+  Shutdown()
 
