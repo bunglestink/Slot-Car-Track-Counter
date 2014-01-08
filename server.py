@@ -1,7 +1,8 @@
 # An http server to serve the track counter frontend.
 
 import json
-import slotcars
+
+import race_manager as race_manager_module
 
 from bottle import route
 from bottle import run
@@ -48,7 +49,7 @@ def GetRaceStats():
 
 
 try:
-  race_manager = slotcars.RaceManager(_TRACK_LISTENER_FILE)
+  race_manager = race_manager_module.RaceManager(_TRACK_LISTENER_FILE)
   run(host=_HOSTNAME, port=_PORT)
 finally:
   race_manager.Stop()
