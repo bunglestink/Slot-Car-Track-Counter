@@ -17,8 +17,8 @@ _STATIC_FILE_ROOT = './static'
 _TRACK_LISTENER_FILE = '/tmp/track-trips'
 
 
-# Holds the race.
-race = None
+# Global race manager object.
+race_manager = None
 
 
 @route('/')
@@ -31,26 +31,25 @@ def StaticFiles(path):
   return static_file(path, _STATIC_FILE_ROOT)
 
 
-@route('/api/race/start/<track_count>')
-def StartRace(track_count):
-  race.Start(track_count)
+@route('/api/race/start')
+def StartRace():
+  race_manager.Start()
 
 
 @route('/api/race/stop')
 def StopRace():
-  race.Stop()
+  race_manager.Stop()
 
 
 @route('/api/race/stats')
 def GetRaceStats():
-  stats = race.GetStats()
+  stats = race_manager.GetStats()
   return json.dumps(stats)
 
 
 try:
-  race = slotcars.Race(_TRACK_LISTENER_FILE)
-  slotcars.Cleanup()
+  race_manager = slotcars.RaceManager(_TRACK_LISTENER_FILE)
   run(host=_HOSTNAME, port=_PORT)
 finally:
-  slotcars.Cleanup()
+  race_manager.Stop()
 

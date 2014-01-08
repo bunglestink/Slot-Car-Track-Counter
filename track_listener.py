@@ -20,6 +20,8 @@ import os
 import serial
 import time
 
+import config
+
 
 _ARDUINO_DEVICE_PATH = '/dev/ttyACM0'
 _BAUD_RATE = 9600
@@ -28,7 +30,8 @@ _BAUD_RATE = 9600
 _DIFFERENCE_THRESHOLD = .05
 _WAIT_AFTER_TRIP_SECONDS = 3
 
-_OUTPUT_FILE = '/tmp/track-trips'
+_OUTPUT_FILE = config.TRACK_LISTENER_OUTPUT_FILE
+_OUTPUT_FILE_DELIMETER = config.TRACK_LISTENER_OUTPUT_FILE_DELIMETER
 
 
 class Arduino(object):
@@ -83,7 +86,7 @@ def LogTripTime(track):
   trip_timestamp = time.time()
   with open(_OUTPUT_FILE, 'a') as f:
     # TODO: Determine what the file format should be.
-    f.write('%s:%r\n' % (track, trip_timestamp))
+    f.write('%s%s%r\n' % (track, _OUTPUT_FILE_DELIMETER, trip_timestamp))
 
 
 def Main():
@@ -96,6 +99,7 @@ def Main():
   arduino = Arduino(_ARDUINO_DEVICE_PATH, _BAUD_RATE)
   
   # Clear the output file if present by deleting.
+  # TODO: Keep historical race data.
   DeleteOutputFileIfExists()
 
   # After being tripped, a track is inactive until its corresponding time.

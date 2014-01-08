@@ -1,35 +1,58 @@
-# Slot car race logic.
+# Slot car race logic manager.
 
+import collections
 import os
+import subprocess
+
+import config
 
 
-_TRACK_MONITOR_PROCESS_FILE = '/tmp/track-monitor-process'
-
-
-class Race(object):
-  """Encapsulates a slot car race.""" 
+class RaceManager(object):
+  """Starts and stops slot car races and handles race state."""
   
   def __init__(self, track_listener_file):
     self._track_listener_file = track_listener_file
+    self._track_listener_process = None
 
-  def Start(self, track_count):
+  def Start(self):
     """Starts a new race with the given number of tracks."""
-    # TODO: Implement me.
+    if self._track_listener_process:
+      return
+    cmd = [config.PYTHON_COMMAND, config.TRACK_LISTENER_FILE]
+    self._track_listener_process = subprocess.Popen(cmd)
 
   def Stop(self):
     """Stops the current race, cleaning up any monitoring."""
-    # TODO: Implement me.
+    if self._track_listener_process:
+      self._track_listener_process.kill()
+    self._track_listener_process = None
 
   def GetStats(self):
-    """Returns the current stats for the race."""
-    # TODO: Implement me.
-    return None
+    """Returns the current stats for the race.
+    
+    Returns:
+      A dictionary where the keys are the track numbers and the values are
+      the times the lap counter has been tripped at.  If there isn't a race
+      currently running, None is returned.
+    """
+    if not self._track_listener_process:
+      return None
 
+    # If output file doesn't exist yet, return empty result.
+    if not os.path.exists(config.TRACK_LISTENER_OUTPUT_FILE):
+      return {}
 
-def Cleanup():
-  if os.path.exists(_TRACK_MONITOR_PROCESS_FILE):
-    with open(_TRACK_MONITOR_PROCESS_FILE, 'r') as f:
-      process_number = f.read().strip()
-      os.system('kill -9 %s' % process_number)
-    os.remove(_TRACK_MONITOR_PROCESS_FILE)
+    with open(config.TRACK_LISTENER_OUTPUT_FILE, 'r') as f:
+      lines = f.readlines()
+
+    # Note: Data will be sorted already, since it is logged sequentially.
+    lap_times = collections.defaultdict(list)
+    for line in lines:
+      print 'Line: %s' % line
+      track_s, time_s = line.split(config.TRACK_LISTENER_OUTPUT_FILE_DELIMETER)
+      track = int(track_s)
+      time = float(time_s.strip())
+      lap_times[track].append(time)
+
+    return lap_times
 
