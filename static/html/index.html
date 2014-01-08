@@ -3,18 +3,19 @@
   <head>
     <title>Slot Car Track Counter</title>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular.min.js"></script>
+    <script src="/static/js/controller.js"></script>
   </head>
-  <body>
+  <body ng-controller="RaceCtrl as Race" ng-init="Race.init()">
     <h1>Slot Car Track Counter</h1>
     <hr />
-    <div>
-      <div class="start-race">
-        Laps: <input type="text" value="5" />
-        Tracks: <input type="text" value="2" />
-        <button type="button">Start Race!</button>
+    <div ng-show="Race.isInitialized">
+      <div class="start-race" ng-hide="Race.isRaceStarted()">
+        Laps: <input ng-model="Race.numberOfLaps" />
+        Tracks: <input ng-model="Race.numberOfTracks" />
+        <button ng-click="Race.startRace()" type="button">Start Race!</button>
       </div>
-      <div class="stop-race" style="display: none;">
-        <button>Stop Race</button>
+      <div class="stop-race" ng-show="Race.isRaceStarted()">
+        <button ng-click="Race.stopRace()" type="button">Stop Race</button>
       </div>
     </div>
     <hr />
@@ -22,35 +23,15 @@
       <thead>
         <tr>
           <th>Lap</th>
-          <th>Track 1</th>
-          <th>Track 2</th>
+          <th ng-repeat="track in Race.trackNumbers">Track {{track}}</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>1</td>
-          <td>47.22</td>
-          <td>38.61</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td></td>
-          <td>42.83</td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr>
-          <td>4</td>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr>
-          <td>5</td>
-          <td></td>
-          <td></td>
+        <tr ng-repeat="lap in Race.lapNumbers">
+          <td>{{lap}}</td>
+          <td ng-repeat="track in Race.trackNumbers">
+            {{Race.getTrackTime(track, lap)}}
+          </td>
         </tr>
       </tbody>
     </table>

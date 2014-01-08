@@ -4,6 +4,7 @@ import json
 
 import race_manager as race_manager_module
 
+from bottle import post
 from bottle import route
 from bottle import run
 from bottle import static_file
@@ -32,12 +33,12 @@ def StaticFiles(path):
   return static_file(path, _STATIC_FILE_ROOT)
 
 
-@route('/api/race/start')
+@post('/api/race/start')
 def StartRace():
   race_manager.Start()
 
 
-@route('/api/race/stop')
+@post('/api/race/stop')
 def StopRace():
   race_manager.Stop()
 
@@ -46,6 +47,11 @@ def StopRace():
 def GetRaceStats():
   stats = race_manager.GetStats()
   return json.dumps(stats)
+
+
+@route('/api/race/isStarted')
+def IsRaceStarted():
+  return json.dumps(race_manager.IsRaceStarted())
 
 
 try:

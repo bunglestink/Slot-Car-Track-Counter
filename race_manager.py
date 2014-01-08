@@ -16,7 +16,7 @@ class RaceManager(object):
 
   def Start(self):
     """Starts a new race with the given number of tracks."""
-    if self._track_listener_process:
+    if self.IsRaceStarted():
       return
     cmd = [config.PYTHON_COMMAND, config.TRACK_LISTENER_FILE]
     self._track_listener_process = subprocess.Popen(cmd)
@@ -48,11 +48,14 @@ class RaceManager(object):
     # Note: Data will be sorted already, since it is logged sequentially.
     lap_times = collections.defaultdict(list)
     for line in lines:
-      print 'Line: %s' % line
       track_s, time_s = line.split(config.TRACK_LISTENER_OUTPUT_FILE_DELIMETER)
       track = int(track_s)
       time = float(time_s.strip())
       lap_times[track].append(time)
 
     return lap_times
+
+  def IsRaceStarted(self):
+    """Returns whether a race is currently running."""
+    return self._track_listener_process is not None
 
