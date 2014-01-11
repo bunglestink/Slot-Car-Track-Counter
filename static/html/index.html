@@ -1,0 +1,40 @@
+<!doctype html>
+<html ng-app>
+  <head>
+    <title>Slot Car Track Counter</title>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular.min.js"></script>
+    <script src="/static/js/controller.js"></script>
+  </head>
+  <body ng-controller="RaceCtrl as Race" ng-init="Race.init()">
+    <h1>Slot Car Track Counter</h1>
+    <hr />
+    <div ng-show="Race.isInitialized">
+      <div class="start-race" ng-hide="Race.isRaceStarted()">
+        Laps: <input ng-model="Race.numberOfLaps" />
+        Tracks: <input ng-model="Race.numberOfTracks" />
+        <button ng-click="Race.startRace()" type="button">Start Race!</button>
+      </div>
+      <div class="stop-race" ng-show="Race.isRaceStarted()">
+        <button ng-click="Race.stopRace()" type="button">Stop Race</button>
+      </div>
+    </div>
+    <hr />
+    <table>
+      <thead>
+        <tr>
+          <th>Lap</th>
+          <th ng-repeat="track in Race.trackNumbers">Track {{track}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="lap in Race.lapNumbers">
+          <td>{{lap}}</td>
+          <td ng-repeat="track in Race.trackNumbers">
+            {{Race.getTrackTime(track, lap)}}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>
+
